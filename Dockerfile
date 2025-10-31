@@ -13,20 +13,4 @@ RUN apk update && \
     corepack prepare yarn@3.5.1 --activate && \
     yarn install
 
-ENTRYPOINT ["/bin/sh", "-c", "
-  set -e;
-
-  # Check for PEM file
-  if [ ! -f /open-swe/key.pem ]; then
-    echo 'ERROR: /open-swe/key.pem not found!' >&2
-    exit 1
-  fi
-
-  # Read PEM into environment variable
-  export GITHUB_APP_PRIVATE_KEY=\"$(cat /open-swe/key.pem)\"
-
-  # Start both dev servers
-  cd \"$OPENSWE_DIR\" && yarn dev &
-  cd \"$WEB_DIR\" && yarn dev &
-  wait
-"]
+ENTRYPOINT ["/bin/sh", "-c", "set -e; if [ ! -f /open-swe/key.pem ]; then echo 'ERROR: /open-swe/key.pem not found!' >&2; exit 1; fi; export GITHUB_APP_PRIVATE_KEY=\"$(cat /open-swe/key.pem)\"; cd \"$OPENSWE_DIR\" && yarn dev & cd \"$WEB_DIR\" && yarn dev & wait"]
